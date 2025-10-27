@@ -1,10 +1,24 @@
+// server/routes/posts.js
+
 const express = require('express');
 const router = express.Router();
+const { 
+    getPosts, 
+    getPost, 
+    createPost, 
+    updatePost, 
+    deletePost 
+} = require('../controllers/postController');
 
-// Placeholder route to satisfy server.js
-// We will add real logic in Task 2
-router.get('/', (req, res) => {
-    res.send('Posts route is working (placeholder)');
-});
+// Routes that handle both GET (all posts) and POST (create a new post)
+router.route('/')
+    .get(getPosts)
+    .post(createPost); 
+
+// Routes that handle single post operations (GET, PUT, DELETE) by ID
+router.route('/:id')
+    .get(getPost)
+    .put(updatePost)
+    .delete(deletePost);
 
 module.exports = router;

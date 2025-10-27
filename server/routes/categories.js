@@ -1,9 +1,15 @@
+// server/routes/categories.js
+
 const express = require('express');
 const router = express.Router();
+const { 
+    getCategories, 
+    createCategory 
+} = require('../controllers/categoryController');
 
-// Placeholder route to satisfy potential server.js require
-router.get('/', (req, res) => {
-    res.send('Categories route is working (placeholder)');
-});
+// Routes that handle both GET (all categories) and POST (create a new category)
+router.route('/')
+    .get(getCategories)
+    .post(createCategory);
 
 module.exports = router;

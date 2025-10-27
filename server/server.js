@@ -20,6 +20,7 @@ const MONGO_URI = process.env.MONGO_URI;
 // --- Middleware ---
 app.use(cors()); // Allows cross-origin requests from the client
 app.use(express.json()); // Allows the server to accept JSON in request body
+app.use(express.urlencoded({ extended: true }));
 
 // --- API Routes (Prefix all routes with /api) ---
 app.use('/api/posts', postRoutes);
