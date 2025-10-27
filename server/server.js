@@ -7,10 +7,11 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
-// Import Placeholder Routes (These satisfy the previous errors)
+// Import Routes and Error Middleware
 const postRoutes = require('./routes/posts');
 const categoryRoutes = require('./routes/categories');
 const authRoutes = require('./routes/auth'); // For Task 5
+const { notFound, errorHandler } = require('./middleware/errorMiddleware'); 
 
 // --- Initialization ---
 const app = express();
@@ -32,6 +33,13 @@ app.get('/', (req, res) => {
     res.send('MERN Blog API is running!');
 });
 
+// --- Error Handling Middleware (MUST be placed after routes) ---
+// 404 Not Found Handler (Catches requests that fall through all routes)
+app.use(notFound);
+
+// General Error Handler
+app.use(errorHandler);
+
 
 // --- Database Connection and Server Start ---
 
@@ -52,5 +60,6 @@ mongoose.connect(MONGO_URI)
     })
     .catch((err) => {
         console.error('❌ Failed to connect to MongoDB:', err.message);
-        // We will add more robust error handling in Task 2
+        // Exit process on connection failure
+        process.exit(1);
     });
