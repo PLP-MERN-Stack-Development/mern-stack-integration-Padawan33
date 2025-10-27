@@ -1,78 +1,55 @@
-// server.js - Main server file for the MERN blog application
+// server/server.js
 
-// Import required modules
+// 1. Load Environment Variables (Crucial for MONGO_URI)
+require('dotenv').config(); 
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const dotenv = require('dotenv');
-const path = require('path');
 
-// Import routes
+// Import Placeholder Routes (These satisfy the previous errors)
 const postRoutes = require('./routes/posts');
 const categoryRoutes = require('./routes/categories');
-const authRoutes = require('./routes/auth');
+const authRoutes = require('./routes/auth'); // For Task 5
 
-// Load environment variables
-dotenv.config();
-
-// Initialize Express app
+// --- Initialization ---
 const app = express();
 const PORT = process.env.PORT || 5000;
+const MONGO_URI = process.env.MONGO_URI;
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// --- Middleware ---
+app.use(cors()); // Allows cross-origin requests from the client
+app.use(express.json()); // Allows the server to accept JSON in request body
 
-// Serve uploaded files
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Log requests in development mode
-if (process.env.NODE_ENV === 'development') {
-  app.use((req, res, next) => {
-    console.log(`${req.method} ${req.url}`);
-    next();
-  });
-}
-
-// API routes
+// --- API Routes (Prefix all routes with /api) ---
 app.use('/api/posts', postRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/auth', authRoutes);
 
-// Root route
+// Simple default route for testing
 app.get('/', (req, res) => {
-  res.send('MERN Blog API is running');
+    res.send('MERN Blog API is running!');
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(err.statusCode || 500).json({
-    success: false,
-    error: err.message || 'Server Error',
-  });
-});
 
-// Connect to MongoDB and start server
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log('Connected to MongoDB');
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error('Failed to connect to MongoDB', err);
+// --- Database Connection and Server Start ---
+
+if (!MONGO_URI) {
+    console.error("FATAL ERROR: MONGO_URI is not defined in the .env file.");
     process.exit(1);
-  });
+}
 
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (err) => {
-  console.error('Unhandled Promise Rejection:', err);
-  // Close server & exit process
-  process.exit(1);
-});
-
-module.exports = app; 
+mongoose.connect(MONGO_URI)
+    .then(() => {
+        console.log('✅ MongoDB Connected successfully.');
+        
+        // Start the Express server only after the DB connection is successful
+        app.listen(PORT, () => {
+            console.log(`🚀 Server running on port ${PORT}`);
+            console.log(`API URL: http://localhost:${PORT}/api/posts`);
+        });
+    })
+    .catch((err) => {
+        console.error('❌ Failed to connect to MongoDB:', err.message);
+        // We will add more robust error handling in Task 2
+    });
