@@ -27,7 +27,7 @@ const PostSchema = new Schema(
     },
     // For Task 5: User/Authentication (Keep this for later)
     author: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       // Note: Changing 'required: true' to 'required: false' temporarily 
       // until we implement User authentication in Task 5, 
