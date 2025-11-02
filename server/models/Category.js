@@ -1,5 +1,5 @@
 // server/models/Category.js
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const CategorySchema = new mongoose.Schema({
     name: {
@@ -25,4 +25,6 @@ CategorySchema.pre('save', function(next) {
     next();
 });
 
-module.exports = mongoose.model('Category', CategorySchema);
+const Category = mongoose.model('Category', CategorySchema);
+
+export default Category;

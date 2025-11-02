@@ -1,0 +1,8 @@
+
+@import "tailwindcss/preflight";
+@import "tailwindcss/utilities";
+
+/* Ensure the root element fills the screen (your custom rule) */
+#root {
+  min-height: 100vh;
+}
