@@ -6,10 +6,14 @@ import {
   createRoutesFromElements, 
   Route 
 } from 'react-router-dom';
+
 import App from './App.jsx';
-import CreatePost from './pages/CreatePost';
-import HomePage from './components/PostList';
+import CreatePost from './pages/CreatePost.jsx'; // Added .jsx
+import HomePage from './components/PostList.jsx'; // Added .jsx
 import './index.css';
+
+// 💡 NEW: Import your AuthProvider
+import { AuthProvider } from './context/AuthContext.jsx';
 
 const routes = createRoutesFromElements(
   <Route path="/" element={<App />}>
@@ -31,6 +35,9 @@ const router = createBrowserRouter(routes);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    {/* 💡 Wrap your RouterProvider with the AuthProvider */}
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </React.StrictMode>
 );

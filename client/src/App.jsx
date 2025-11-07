@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
-// 💡 REMOVED BrowserRouter, as it's provided by main.jsx
-import { Routes, Route, Link } from 'react-router-dom'; 
+import React, { useState, useEffect, useContext } from 'react'; // 💡 Import useContext
+import { Routes, Route, Link, useNavigate } from 'react-router-dom'; // 💡 Import useNavigate
 import api from './api.js'; 
 import CreatePost from './pages/CreatePost.jsx'; 
+import RegisterPage from './pages/RegisterPage.jsx';
+import LoginPage from './pages/LoginPage.jsx';
+import AuthContext from './context/AuthContext.jsx'; // 💡 Import AuthContext
 
 // --- UTILITY COMPONENTS ---
+// ... (LoadingSpinner, ErrorMessage, PostCard remain the same) ...
 const LoadingSpinner = () => (
   <div style={{ textAlign: 'center', margin: '50px', fontSize: '18px' }}>
     Loading posts...
@@ -66,22 +69,17 @@ const HomePage = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      console.log('[HomePage] Attempting to fetch posts from /api/posts...');
       try {
         const response = await api.get('/posts');
-        console.log('[HomePage] API Response received:', response.data);
-
         if (response.data.success) {
           setPosts(response.data.data);
         } else {
           setError('API returned success: false');
         }
-
       } catch (err) {
         console.error('[HomePage] Error in fetchPosts catch block:', err);
         setError("Failed to fetch posts. Check the console.");
       } finally {
-        console.log('[HomePage] Setting loading to false.');
         setLoading(false);
       }
     };
@@ -122,17 +120,56 @@ const PostDetailPage = () => {
 
 // --- LAYOUT COMPONENTS ---
 const Header = () => {
+  // 💡 NEW: Get auth state and logout function from context
+  const { userInfo, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/'); // Redirect to home after logout
+  };
+
   return (
     <header style={{ background: '#fff', borderBottom: '1px solid #eee', position: 'sticky', top: 0, zIndex: 10 }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '64px' }}>
         <Link to="/" style={{ fontSize: '24px', fontWeight: 'bold', color: '#337ab7', textDecoration: 'none' }}>
           MERN Blog
         </Link>
-        <nav style={{ display: 'flex', gap: '20px' }}>
+        <nav style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
           <Link to="/" style={{ color: '#555', textDecoration: 'none' }}>Home</Link>
-          <Link to="/create" style={{ padding: '5px 15px', border: '1px solid #337ab7', color: '#337ab7', borderRadius: '20px', textDecoration: 'none' }}>
-            New Post
-          </Link>
+          
+          {/* 💡 NEW: Conditional Links */}
+          {userInfo ? (
+            <>
+              {/* Show "New Post" and "Logout" if logged in */}
+              <Link to="/create" style={{ padding: '5px 15px', border: '1px solid #337ab7', color: '#337ab7', borderRadius: '20px', textDecoration: 'none' }}>
+                New Post
+              </Link>
+              <span style={{ color: '#333', fontWeight: '500' }}>
+                Hello, {userInfo.username}
+              </span>
+              <button 
+                onClick={handleLogout} 
+                style={{ 
+                  color: '#555', 
+                  textDecoration: 'none', 
+                  background: 'none', 
+                  border: 'none', 
+                  cursor: 'pointer', 
+                  fontSize: '1em' 
+                }}
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              {/* Show "Login" and "Register" if logged out */}
+              <Link to="/login" style={{ color: '#555', textDecoration: 'none' }}>Log In</Link>
+              <Link to="/register" style={{ color: '#555', textDecoration: 'none' }}>Register</Link>
+            </>
+          )}
+          
         </nav>
       </div>
     </header>
@@ -153,7 +190,6 @@ const Footer = () => {
 
 const App = () => {
   return (
-    // 🛑 REMOVED BrowserRouter from here
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#f9f9f9' }}>
         <Header />
         <main style={{ flexGrow: 1, width: '100%', maxWidth: '1200px', margin: '20px auto', padding: '0 20px' }}>
@@ -161,12 +197,13 @@ const App = () => {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/post/:id" element={<PostDetailPage />} />
                 <Route path="/create" element={<CreatePost />} /> 
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/login" element={<LoginPage />} />
                 <Route path="*" element={<div style={{ textAlign: 'center', marginTop: '50px', fontSize: '24px' }}>404 - Page Not Found</div>} />
             </Routes>
         </main>
         <Footer />
     </div>
-    // 🛑 REMOVED BrowserRouter from here
   );
 };
 

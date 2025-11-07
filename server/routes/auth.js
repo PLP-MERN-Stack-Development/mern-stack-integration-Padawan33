@@ -1,14 +1,9 @@
-const express = require('express');
+import express from 'express';
+import { registerUser, loginUser } from '../controllers/authController.js';
+
 const router = express.Router();
 
-// Placeholder route for authentication logic (Task 5)
-// We will add real logic later.
-router.post('/register', (req, res) => {
-    res.send('Auth register route is working (placeholder)');
-});
+router.post('/register', registerUser);
+router.post('/login', loginUser);
 
-router.post('/login', (req, res) => {
-    res.send('Auth login route is working (placeholder)');
-});
-
-module.exports = router;
+export default router;

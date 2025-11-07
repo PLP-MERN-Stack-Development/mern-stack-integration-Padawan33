@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react'; // 💡 Import useContext
 import { useNavigate } from 'react-router-dom';
 import api from '../api.js';
+import AuthContext from '../context/AuthContext.jsx'; // 💡 Import the AuthContext
 
 export default function CreatePost() {
-  // ... (All state variables remain the same) ...
+  // ... (State variables remain the same) ...
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [file, setFile] = useState(null);
@@ -11,8 +12,11 @@ export default function CreatePost() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [redirect, setRedirect] = useState(false); // This will now trigger the useEffect
+  const [redirect, setRedirect] = useState(false);
   const navigate = useNavigate();
+
+  // 💡 NEW: Get user info (which includes the token) from context
+  const { userInfo } = useContext(AuthContext);
 
   // ... (useEffect for fetching categories remains the same) ...
   useEffect(() => {
@@ -27,23 +31,25 @@ export default function CreatePost() {
       finally { setLoadingCategories(false); }
     };
     fetchCategories();
-  }, []); // Runs once on mount
+  }, []); 
 
-  // 💡 --- NEW useEffect FOR NAVIGATION --- 💡
-  // This effect will run ONLY when the 'redirect' state changes to true
   useEffect(() => {
     if (redirect) {
-      navigate('/'); // This is now a safe "side-effect"
+      navigate('/'); 
     }
-  }, [redirect, navigate]); // Dependency array
-  // 💡 --- END NEW useEffect --- 💡
+  }, [redirect, navigate]); 
 
-
-  // ... (createNewPost function remains the same) ...
   async function createNewPost() {
     if (loadingCategories || !selectedCategory) {
       alert('Please select a category.');
       return;
+    }
+
+    // 💡 NEW: Check if user is logged in
+    if (!userInfo || !userInfo.token) {
+        alert('You must be logged in to create a post.');
+        navigate('/login');
+        return;
     }
     
     setIsSubmitting(true);
@@ -56,21 +62,26 @@ export default function CreatePost() {
 
     let featuredImagePath = 'default-post.jpg';
 
+    // Create the authorization header
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${userInfo.token}` // 💡 NEW: Add the token
+      }
+    };
+
     try {
       // === STEP 1: UPLOAD IMAGE ===
       const fileData = new FormData();
       fileData.set('file', file); 
       
-      const uploadResponse = await api.post('/upload', fileData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      // 💡 NEW: Send the auth header with the upload request
+      const uploadResponse = await api.post('/upload', fileData, config);
       
       if (uploadResponse.data.success) {
         featuredImagePath = uploadResponse.data.imagePath;
       } else {
-        throw new Error('File upload failed (client-side check).');
+        throw new Error('File upload failed.');
       }
 
       // === STEP 2: SUBMIT POST AS JSON ===
@@ -78,32 +89,46 @@ export default function CreatePost() {
         title,
         content,
         category: selectedCategory,
-        author: '66a0142b4700d97034c56b02', // Valid placeholder ID
+        // 💡 REMOVED: Author is now set by the server from the token
+        // author: '66a0142b4700d97034c56b02', 
         featuredImage: featuredImagePath,
       };
 
-      const postResponse = await api.post('/posts', postData); 
+      // 💡 NEW: Create a new config for the JSON request
+      const jsonConfig = {
+         headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${userInfo.token}` // 💡 NEW: Add the token
+        }
+      };
+
+      // Send as plain JSON with auth header
+      const postResponse = await api.post('/posts', postData, jsonConfig); 
 
       if (postResponse.status === 201) {
-        setRedirect(true); // This will now safely trigger the useEffect
+        setRedirect(true);
       } else {
         alert('Failed to create post after image upload.');
       }
     } catch (error) {
       console.error('Error creating post:', error.response?.data || error.message);
-      alert('An error occurred. Check the console.');
+      // Check for auth error
+      if (error.response?.status === 401) {
+          alert('Authorization failed. Please log in again.');
+          navigate('/login');
+      } else {
+          alert('An error occurred. Check the console.');
+      }
     } finally {
       setIsSubmitting(false);
     }
   }
 
-  // 🛑 REMOVED the "if (redirect)" block from here
-
   // ... (The return/JSX remains the same) ...
   return (
     <div style={{ maxWidth: '800px', margin: '40px auto', padding: '20px', border: '1px solid #ccc', background: '#fff' }}>
       <h2 style={{ fontSize: '24px', textAlign: 'center', marginBottom: '20px' }}>
-        Create a New Blog Post (Navigation Fix)
+        Create a New Blog Post (Auth Enabled)
       </h2>
       <form style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
         

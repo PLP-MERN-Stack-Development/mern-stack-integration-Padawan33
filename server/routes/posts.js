@@ -1,15 +1,22 @@
-import express from 'express'; // 💡 Convert require('express') to import express from 'express'
-import { getPosts, createPost } from '../controllers/postsController.js';
+import express from 'express';
+import {
+  getPosts,
+  getPost,
+  createPost,
+  updatePost,
+  deletePost,
+} from '../controllers/postsController.js';
+import { protect } from '../middleware/authMiddleware.js'; // 💡 NEW: Import protect
+
 const router = express.Router();
 
-// Route for getting all posts and creating a new post
-// NOTE: We will update the createPost controller to handle file uploads in the next step!
-router.route('/')
-    .get(getPosts)
-    .post(createPost);
+// Public Routes (anyone can see)
+router.route('/').get(getPosts);
+router.route('/:id').get(getPost);
 
-// Add routes for single post operations (e.g., /:id) as needed later
-// router.route('/:id').get(getPostById).put(updatePost).delete(deletePost);
+// Protected Routes (only logged-in users can access)
+router.route('/').post(protect, createPost); // 💡 NEW: Add 'protect'
+router.route('/:id').put(protect, updatePost); // 💡 NEW: Add 'protect'
+router.route('/:id').delete(protect, deletePost); // 💡 NEW: Add 'protect'
 
-
-export default router; // ✅ Crucial for resolving the import in server.js
+export default router;
