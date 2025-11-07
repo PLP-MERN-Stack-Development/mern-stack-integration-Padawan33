@@ -1,15 +1,12 @@
-// server/routes/categories.js
+import express from 'express';
+// Make sure the controller path is correct and includes the .js extension
+import { getCategories, createCategory } from '../controllers/categoryController.js';
 
-const express = require('express');
 const router = express.Router();
-const { 
-    getCategories, 
-    createCategory 
-} = require('../controllers/categoryController');
 
-// Routes that handle both GET (all categories) and POST (create a new category)
+// Routes for /api/categories
 router.route('/')
     .get(getCategories)
     .post(createCategory);
 
-module.exports = router;
+export default router; // Use default export
