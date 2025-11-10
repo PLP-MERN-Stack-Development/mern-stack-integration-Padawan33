@@ -6,17 +6,24 @@ import {
   updatePost,
   deletePost,
 } from '../controllers/postsController.js';
-import { protect } from '../middleware/authMiddleware.js'; // 💡 NEW: Import protect
+import { protect } from '../middleware/authMiddleware.js';
+
+// 💡 NEW: Import the comment router
+import commentRoutes from './commentRoutes.js';
 
 const router = express.Router();
 
-// Public Routes (anyone can see)
+// 💡 NEW: Tell the router to use commentRoutes for nested URLs
+// This forwards /api/posts/:postId/comments to the comment router
+router.use('/:postId/comments', commentRoutes);
+
+// Public Routes
 router.route('/').get(getPosts);
 router.route('/:id').get(getPost);
 
-// Protected Routes (only logged-in users can access)
-router.route('/').post(protect, createPost); // 💡 NEW: Add 'protect'
-router.route('/:id').put(protect, updatePost); // 💡 NEW: Add 'protect'
-router.route('/:id').delete(protect, deletePost); // 💡 NEW: Add 'protect'
+// Protected Routes
+router.route('/').post(protect, createPost);
+router.route('/:id').put(protect, updatePost);
+router.route('/:id').delete(protect, deletePost);
 
 export default router;

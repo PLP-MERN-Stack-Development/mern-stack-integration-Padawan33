@@ -5,16 +5,24 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
+    "./src/pages/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
+      colors: {
+        'brand-navy': '#0a192f',
+        'brand-gold': '#f7c30a',
+        'brand-blue': '#3b9eff',
+        'brand-red': '#d62f2f',
+        'brand-light': '#e6f1ff', 
+        'brand-dark-accent': '#1e3a5f',
+      },
       fontFamily: {
-        // Ensuring a font is specified to confirm styles apply
-        sans: ['Inter', 'sans-serif'], 
+        sans: ['Roboto Condensed', 'sans-serif'],
       },
     },
   },
   plugins: [
     typography,
   ],
-};
+};  
