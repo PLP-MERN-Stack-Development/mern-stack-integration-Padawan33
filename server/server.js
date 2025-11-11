@@ -15,15 +15,18 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 // --- END ESM Setup ---
 
+// Load environment variables
 dotenv.config({ path: './config/config.env' });
+
+// Connect to DB
 connectDB();
 
 const app = express();
 app.use(cors()); // Use CORS for all requests
 
 // Serve static files from 'uploads'
-// We use path.resolve to create an absolute path Vercel can understand
-app.use('/uploads', express.static(path.resolve(__dirname, 'uploads')));
+// Vercel handles this differently, but we'll use a path relative to the server file
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // --- Apply middleware per-route ---
 app.use('/api/posts', postRoutes); 
@@ -32,12 +35,10 @@ app.use('/api/auth', express.json(), authRoutes);
 app.use('/api/upload', uploadRoutes); 
 
 // Simple message to confirm the API is running
-app.get('/api/test', (req, res) => { // Added /api prefix for testing
+app.get('/', (req, res) => {
     res.send('MERN Blog API is running...');
 });
 
-// 🛑 IMPORTANT 🛑
-// We no longer call app.listen(). 
-// Vercel will handle running the server.
-// We just need to export the 'app'.
+// 🛑 REMOVED app.listen()
+// 💡 NEW: Export the app for Vercel to use
 export default app;

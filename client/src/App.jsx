@@ -542,7 +542,7 @@ const App = () => {
         <Header />
         <main style={{ flexGrow: 1, width: '100%', maxWidth: '1200px', margin: '20px auto', padding: '0 20px' }}>
             <Routes>
-                <Route path="/" element={<HomePage />} />
+                <Route path="/*" element={<HomePage />} />
                 <Route path="/post/:id" element={<PostDetailPage />} />
                 <Route path="/create" element={<CreatePost />} /> 
                 <Route path="/register" element={<RegisterPage />} />
