@@ -1,14 +1,12 @@
 import axios from 'axios';
 
-// Checks if the app is running in the Vercel production environment
-const isProduction = process.env.NODE_ENV === 'production';
+// 💡 NEW LOGIC:
+// When Vercel builds (PROD=true), use a relative '/api' path.
+// When running locally (PROD=false), use the full URL from the .env file.
+const API_BASE_URL = import.meta.env.PROD
+  ? '/api'
+  : import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
-// If in production, use the relative path '/api'. 
-// If in development (local), use the full server address.
-const API_BASE_URL = isProduction ? '/api' : 'http://127.0.0.1:5000/api';
-
-const api = axios.create({
+export default axios.create({
   baseURL: API_BASE_URL,
 });
-
-export default api;
