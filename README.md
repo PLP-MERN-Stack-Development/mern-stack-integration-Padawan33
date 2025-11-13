@@ -1,4 +1,4 @@
-# MERN Stack Blog: "The Starfleet Daily"
+# MERN Stack Blog: "Starfleet Daily"
 
 This project is a full-stack MERN (MongoDB, Express.js, React.js, Node.js) blog application built as part of the MERN Stack Integration assignment. The application allows users to register, log in, create blog posts (including image uploads), and view posts from other users.
 
