@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage.jsx';
 import CategoryManager from './pages/CategoryManager.jsx'; 
 import AuthContext from './context/AuthContext.jsx'; 
 import enterpriseSvg from './enterprise.svg'; // Example subtle ship graphic
+
 // --- UTILITY COMPONENTS ---
 const LoadingSpinner = () => (
   <div style={{ textAlign: 'center', margin: '50px', fontSize: '18px' }}>
@@ -23,12 +24,17 @@ const ErrorMessage = ({ message }) => (
 
 const PostCard = ({ post }) => {
     const defaultExcerpt = post.content ? (post.content.substring(0, 150) + (post.content.length > 150 ? '...' : '')) : 'No content preview available.';
-    const imageUrl = `http://localhost:5000${post.featuredImage}`;
+    
+    // 💡 FIX: The database now contains the full public URL. No need to add localhost.
+    const imageUrl = post.featuredImage;
 
     return (
         <div style={{ border: '1px solid #3b9eff', borderRadius: '8px', margin: '10px', padding: '15px', background: 'rgba(30, 58, 95, 0.6)', backdropFilter: 'blur(5px)' }}>
             <div style={{ height: '200px', background: '#0a192f', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #3b9eff' }}>
-                {post.featuredImage && post.featuredImage !== 'default-post.jpg' ? (
+                {/* 💡 Check if image is not the default AND is a valid URL (starts with http).
+                  This handles both new blob URLs and the old 'default-post.jpg' string.
+                */}
+                {post.featuredImage && post.featuredImage.startsWith('http') ? (
                   <img src={imageUrl} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
                   <span style={{ color: '#888' }}>[No Image]</span>
@@ -425,7 +431,9 @@ const PostDetailPage = () => {
     month: 'long',
     day: 'numeric',
   });
-  const imageUrl = `http://localhost:5000${post.featuredImage}`;
+  
+  // 💡 FIX: The database now contains the full public URL. No need to add localhost.
+  const imageUrl = post.featuredImage;
 
   return (
     <article style={{ maxWidth: '800px', margin: '40px auto', background: 'rgba(10, 25, 47, 0.9)', border: '1px solid #3b9eff', padding: '30px', borderRadius: '8px', boxShadow: '0 0 15px rgba(59, 158, 255, 0.5)' }}>
@@ -439,7 +447,10 @@ const PostDetailPage = () => {
         Published on {publicationDate}
       </div>
 
-      {post.featuredImage && post.featuredImage !== 'default-post.jpg' && (
+      {/* 💡 Check if image is not the default AND is a valid URL (starts with http).
+        This handles both new blob URLs and the old 'default-post.jpg' string.
+      */}
+      {post.featuredImage && post.featuredImage.startsWith('http') && (
         <img 
           src={imageUrl} 
           alt={post.title} 

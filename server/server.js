@@ -8,7 +8,7 @@ import connectDB from './config/db.js';
 import postRoutes from './routes/posts.js';
 import categoryRoutes from './routes/categories.js';
 import authRoutes from './routes/auth.js'; 
-import uploadRoutes from './routes/uploadRoutes.js';
+// 💡 REMOVED: import uploadRoutes from './routes/uploadRoutes.js';
 
 // --- ESM Setup ---
 const __filename = fileURLToPath(import.meta.url);
@@ -24,15 +24,14 @@ connectDB();
 const app = express();
 app.use(cors()); // Use CORS for all requests
 
-// Serve static files from 'uploads'
-// Vercel handles this differently, but we'll use a path relative to the server file
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// 💡 REMOVED: Serving static files from 'uploads'
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // --- Apply middleware per-route ---
 app.use('/api/posts', postRoutes); 
 app.use('/api/categories', express.json(), categoryRoutes);
 app.use('/api/auth', express.json(), authRoutes);
-app.use('/api/upload', uploadRoutes); 
+// 💡 REMOVED: app.use('/api/upload', uploadRoutes); 
 
 // Simple message to confirm the API is running
 app.get('/', (req, res) => {
