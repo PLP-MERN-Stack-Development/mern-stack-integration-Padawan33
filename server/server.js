@@ -38,6 +38,14 @@ app.get('/', (req, res) => {
     res.send('MERN Blog API is running...');
 });
 
+// 💡 ADDED: Listen on Render's port or 5000 for local dev
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(
+    `Server running in ${process.env.NODE_ENV} mode on port ${PORT}`
+  );
+});
+
 // 🛑 REMOVED app.listen()
 // 💡 NEW: Export the app for Vercel to use
 export default app;
