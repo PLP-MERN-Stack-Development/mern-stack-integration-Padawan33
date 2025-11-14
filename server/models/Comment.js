@@ -12,7 +12,7 @@ const commentSchema = new Schema({
     ref: 'Post',
     required: true,
   },
-  // Link to the author
+  // Link to the authors
   author: {
     type: Schema.Types.ObjectId,
     ref: 'User',

@@ -1,7 +1,7 @@
 import Comment from '../models/Comment.js';
 import Post from '../models/Post.js';
 
-// @desc    Get all comments for a specific post
+// @desc    Get all comments for a specified post
 // @route   GET /api/posts/:postId/comments
 export const getCommentsForPost = async (req, res) => {
   console.log(`[Comments] Hit GET /api/posts/${req.params.postId}/comments`);
