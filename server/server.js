@@ -7,7 +7,9 @@ import cors from 'cors';
 import connectDB from './config/db.js';
 import postRoutes from './routes/posts.js';
 import categoryRoutes from './routes/categories.js';
-import authRoutes from './routes/auth.js'; 
+import authRoutes from './routes/auth.js';
+import commentRoutes from './routes/commentRoutes.js';
+
 // 💡 REMOVED: import uploadRoutes from './routes/uploadRoutes.js';
 
 // --- ESM Setup ---
@@ -28,7 +30,8 @@ app.use(cors()); // Use CORS for all requests
 // app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // --- Apply middleware per-route ---
-app.use('/api/posts', postRoutes); 
+app.use('/api/posts', postRoutes);
+app.use('/api/comments', commentRoutes);
 app.use('/api/categories', express.json(), categoryRoutes);
 app.use('/api/auth', express.json(), authRoutes);
 // 💡 REMOVED: app.use('/api/upload', uploadRoutes); 
