@@ -55,7 +55,7 @@ export const getPosts = async (req, res) => {
         });
     } catch (error) {
         console.error("[GET /api/posts] Error fetching posts:", error); 
-        res.status(500).json({ success: false, error: 'Server Error' });
+        res.status(500).json({ success: false, error: error.message });
     }
 };
 
